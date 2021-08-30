@@ -35,7 +35,19 @@ func ListWinners(res http.ResponseWriter, req *http.Request) {
 
 // AddNewWinner adds new winner to the list
 func AddNewWinner(res http.ResponseWriter, req *http.Request) {
-
+	accessToken := req.Header.Get("X-ACCESS-TOKEN")
+	isToKenValid := data.IsAccessTokenValid(accessToken)
+	if !isToKenValid {
+		res.WriteHeader(http.StatusUnauthorized)
+		return
+	} else {
+		error := data.AddNewWinner(req.Body)
+		if error != nil {
+			res.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
+		res.WriteHeader(http.StatusCreated)
+	}
 }
 
 // WinnersHandler is the dispatcher for all /winners URL
